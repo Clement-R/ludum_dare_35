@@ -37,6 +37,12 @@ BasicGame.Preloader.prototype = {
 		this.load.image('ladder', 'ladder.png');
 
 		this.load.image('test_bullet', 'test_bullet.png');
+		this.load.image('chicken_bullet', 'chicken_bullet.png');
+		this.load.image('player', 'player.png');
+
+		this.load.audio('uzi_shoot', ['Laser_Shoot151.mp3']);
+		this.load.audio('pistol_shoot', ['Laser_Shoot157.mp3']);
+		this.load.audio('jump', ['Jump25.mp3']);
 	},
 
 	create: function () {
