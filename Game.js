@@ -46,69 +46,103 @@ BasicGame.Game.prototype = {
         player_texture.ctx.fill();
 
         player = this.add.sprite(100, 1216, player_texture);
+
         this.physics.enable(player, Phaser.Physics.ARCADE);
         player.body.collideWorldBounds = true;
-        cursors = this.input.keyboard.createCursorKeys();
-        jumpButton = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        player.body.gravity.y = 700;
+
         jumpTimer = 0;
         facing = "";
+        idle = true;
+        nextFire = 0;
+        fireRate = 250;
+
+        playerVelocity = 200;
+
+        // Weapon things
+        bullets = this.add.group();
+        bullets.enableBody = true;
+        bullets.physicsBodyType = Phaser.Physics.ARCADE;
+
+        for (var i = 0; i < 1000; i++) {
+            var b = bullets.create(0, 0, 'test_bullet');
+            b.name = 'bullet' + i;
+            b.exists = false;
+            b.visible = false;
+            b.checkWorldBounds = true;
+            b.body.allowGravity = false
+            b.events.onOutOfBounds.add(function(bullet) {bullet.kill()}, this);
+        }
 
         // Camera settings
         this.camera.follow(player);
+
+        // Set up controls
+        cursors = this.input.keyboard.createCursorKeys();
+        jumpButton = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        shootButton = this.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
     },
 
     update: function () {
         this.physics.arcade.collide(player, layer);
+        this.physics.arcade.collide(bullets, layer, function(bullet) {
+            bullet.kill();
+        });
 
+        /* MOVE MOVE */
         player.body.velocity.x = 0;
-
-        if (cursors.left.isDown)
-        {
-            player.body.velocity.x = -150;
-
-            if (facing != 'left')
-            {
+        if (cursors.left.isDown) {
+            player.body.velocity.x = -playerVelocity;
+            if (facing != 'left') {
                 // player.animations.play('left');
                 facing = 'left';
             }
-        }
-        else if (cursors.right.isDown)
-        {
-            player.body.velocity.x = 150;
+            idle = false;
+        } else if (cursors.right.isDown) {
+            player.body.velocity.x = playerVelocity;
 
-            if (facing != 'right')
-            {
+            if (facing != 'right') {
                 // player.animations.play('right');
                 facing = 'right';
             }
-        }
-        else
-        {
-            if (facing != 'idle')
-            {
+            idle = false;
+        } else {
+            // if (facing != 'idle') {
+            if (!idle) {
                 // player.animations.stop();
 
-                if (facing == 'left')
-                {
+                if (facing == 'left') {
                     player.frame = 0;
-                }
-                else
-                {
+                } else {
                     player.frame = 5;
                 }
 
-                facing = 'idle';
+                idle = true;
             }
         }
 
-        if (jumpButton.isDown && this.time.now > jumpTimer && player.body.velocity.y == 0)
-        {
-            player.body.velocity.y = -300;
+        /* JUMP JUMP ! */
+        if (jumpButton.isDown && this.time.now > jumpTimer && player.body.velocity.y == 0) {
+            player.body.velocity.y = -550;
             jumpTimer = this.time.now + 750;
         }
 
-        console.log(player.x);
-        console.log(player.y);
+        /* SHOOT ! */
+        if (shootButton.isDown) {
+            if (this.time.time >= nextFire) {
+                bullet = bullets.getFirstExists(false);
+                if (bullet) {
+                    if(facing == "right") {
+                        bullet.reset(player.x + 32, player.y + 16);
+                        bullet.body.velocity.x = 750;
+                    } else if (facing == "left") {
+                        bullet.reset(player.x - 32, player.y + 16);
+                        bullet.body.velocity.x = -750;
+                    }
+                    nextFire = this.time.time + fireRate;
+                }
+            }
+        }
     },
 
     quitGame: function (pointer) {
