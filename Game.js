@@ -59,6 +59,20 @@ BasicGame.Game.prototype = {
 
         playerVelocity = 200;
 
+        // Set up enemy
+        enemies = this.add.group();
+
+        var enemy_texture = this.add.bitmapData(32, 32);
+        enemy_texture.ctx.beginPath();
+        enemy_texture.ctx.rect(0,0,32,32);
+        enemy_texture.ctx.fillStyle = '#27ae60';
+        enemy_texture.ctx.fill();
+
+        enemy = this.add.sprite(200, 1216, enemy_texture);
+        this.physics.enable(enemy, Phaser.Physics.ARCADE);
+        enemy.body.immovable = true;
+        enemies.add(enemy);
+
         // Weapon things
         bullets = this.add.group();
         bullets.enableBody = true;
@@ -85,7 +99,15 @@ BasicGame.Game.prototype = {
 
     update: function () {
         this.physics.arcade.collide(player, layer);
+        this.physics.arcade.collide(enemies, layer);
+
         this.physics.arcade.collide(bullets, layer, function(bullet) {
+            bullet.kill();
+        });
+
+        this.physics.arcade.collide(player, enemies);
+
+        this.physics.arcade.overlap(enemies, bullets, function(enemy, bullet){
             bullet.kill();
         });
 
