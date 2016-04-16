@@ -34,6 +34,7 @@ BasicGame.Preloader.prototype = {
 
 		this.load.tilemap('map', 'test_map.json', null, Phaser.Tilemap.TILED_JSON);
 		this.load.image('wall', 'wall_tile.png');
+		this.load.image('ladder', 'ladder.png');
 
 		this.load.image('test_bullet', 'test_bullet.png');
 	},
