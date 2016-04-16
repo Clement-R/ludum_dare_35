@@ -38,8 +38,10 @@ BasicGame.Game.prototype = {
 
         layer = map.createLayer("Calque de Tile 1");
         layer_ladders = map.createLayer("ladders");
+        outer = map.createLayer("outer");
 
         map.setCollisionBetween(1, 1, true, "Calque de Tile 1");
+        map.setCollisionBetween(1, 1, true, "outer");
 
         map.setCollisionBetween(2, true, "ladders");
         map.setTileIndexCallback(2, function () {
@@ -76,14 +78,9 @@ BasicGame.Game.prototype = {
         enemies.enableBody = true;
         enemies.physicsBodyType = Phaser.Physics.ARCADE;
 
-        var enemy_texture = this.add.bitmapData(32, 32);
-        enemy_texture.ctx.beginPath();
-        enemy_texture.ctx.rect(0,0,32,32);
-        enemy_texture.ctx.fillStyle = '#27ae60';
-        enemy_texture.ctx.fill();
-
-        enemy = enemies.create(200, 150, enemy_texture);
-        enemy.body.immovable = true;
+        this.createEnemy(200, 150);
+        this.createEnemy(240, 150);
+        this.createEnemy(400, 150);
 
         // Weapon things
         bullets = this.add.group();
@@ -109,11 +106,34 @@ BasicGame.Game.prototype = {
         shootButton = this.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
     },
 
+    createEnemy: function(x, y) {
+        var enemy_texture = this.add.bitmapData(32, 32);
+        enemy_texture.ctx.beginPath();
+        enemy_texture.ctx.rect(0,0,32,32);
+        enemy_texture.ctx.fillStyle = '#27ae60';
+        enemy_texture.ctx.fill();
+
+        enemy = enemies.create(x, y, enemy_texture);
+        enemy.body.gravity.y = 700;
+        enemy.velocity = -150;
+        enemy.body.velocity.x = enemy.velocity;
+        enemy.body.immovable = true;
+
+        enemy.changeDirection = function() {
+            this.velocity = this.velocity * -1;
+            this.body.velocity.x = this.velocity;
+        };
+    },
+
     update: function () {
         this.physics.arcade.collide(player, layer);
+        this.physics.arcade.collide(player, outer);
         this.physics.arcade.collide(player, layer_ladders);
 
         this.physics.arcade.collide(enemies, layer);
+        this.physics.arcade.collide(enemies, outer, function(enemy, wall){
+            enemy.changeDirection();
+        });
 
         this.physics.arcade.collide(bullets, layer, function(bullet) {
             bullet.kill();
@@ -126,8 +146,8 @@ BasicGame.Game.prototype = {
         });
 
         /* Enemy basic AI */
-        enemy = enemies.getFirstAlive(false);
-        // enemy.body.velocity.x = -50;
+        enemies.forEach(function(enemy){
+        }.bind(this));
 
         /* MOVE MOVE */
         player.body.velocity.x = 0;
