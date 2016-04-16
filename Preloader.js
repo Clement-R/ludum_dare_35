@@ -33,16 +33,17 @@ BasicGame.Preloader.prototype = {
 		this.load.image('play', 'play.png');*/
 
 		this.load.tilemap('map', 'test_map.json', null, Phaser.Tilemap.TILED_JSON);
-		this.load.image('wall', 'wall_tile.png');
-		this.load.image('ladder', 'ladder.png');
+		this.load.image('wall', 'graphics/wall_tile.png');
+		this.load.image('ladder', 'graphics/ladder.png');
 
-		this.load.image('test_bullet', 'test_bullet.png');
-		this.load.image('chicken_bullet', 'chicken_bullet.png');
-		this.load.image('player', 'player.png');
+		this.load.image('test_bullet', 'graphics/test_bullet.png');
+		this.load.image('chicken_bullet', 'graphics/chicken_bullet.png');
+		this.load.image('player', 'graphics/player.png');
+		this.load.image('basic_enemy', 'graphics/basic_enemy.png');
 
-		this.load.audio('uzi_shoot', ['Laser_Shoot151.mp3']);
-		this.load.audio('pistol_shoot', ['Laser_Shoot157.mp3']);
-		this.load.audio('jump', ['Jump25.mp3']);
+		this.load.audio('uzi_shoot', ['sounds/Laser_Shoot151.mp3']);
+		this.load.audio('pistol_shoot', ['sounds/Laser_Shoot157.mp3']);
+		this.load.audio('jump', ['sounds/Jump25.mp3']);
 	},
 
 	create: function () {

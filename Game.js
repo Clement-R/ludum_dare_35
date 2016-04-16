@@ -34,51 +34,46 @@ BasicGame.Game.prototype = {
         this.physics.arcade.gravity.y = 350;
 
         // Create map
-        var map = this.add.tilemap("map");
-        map.addTilesetImage("wall");
+        this.map = this.add.tilemap("map");
+        this.map.addTilesetImage("wall");
 
-        layer = map.createLayer("Calque de Tile 1");
-        outer = map.createLayer("outer");
-        house = map.createLayer("house");
+        this.layer = this.map.createLayer("Calque de Tile 1");
+        this.outer = this.map.createLayer("outer");
+        this.house = this.map.createLayer("house");
+        this.map.setCollisionBetween(1, 1, true, "Calque de Tile 1");
+        this.map.setCollisionBetween(1, 1, true, "outer");
+        this.layer.resizeWorld();
 
-        map.setCollisionBetween(1, 1, true, "Calque de Tile 1");
-        map.setCollisionBetween(1, 1, true, "outer");
+        // Create player and add physic body and collision with world bounds
+        this.player = new Player(this);
+        this.physics.enable(this.player, Phaser.Physics.ARCADE);
+        this.player.setPhysic();
 
-        layer.resizeWorld();
-
-        // Set up player
+        /*
         player = this.add.sprite(33 * 32, 12 * 32, "player");
 
         this.physics.enable(player, Phaser.Physics.ARCADE);
-        player.body.collideWorldBounds = true;
-        player.body.gravity.y = 700;
+        */
 
-        jumpTimer = 0;
-        facing = "";
-        idle = true;
-        nextFire = 0;
-
-        jumpSound = this.game.add.audio('jump');
-        jumpSound.volume = 0.5;
-
-        playerVelocity = 200;
+        this.jumpSound = this.game.add.audio('jump');
+        this.jumpSound.volume = 0.5;
 
         // Set up enemy
-        enemies = this.add.group();
-        enemies.enableBody = true;
-        enemies.physicsBodyType = Phaser.Physics.ARCADE;
+        this.enemies = this.add.group();
+        this.enemies.enableBody = true;
+        this.enemies.physicsBodyType = Phaser.Physics.ARCADE;
 
-        this.createEnemy(200, 150);
-        this.createEnemy(240, 150);
-        this.createEnemy(400, 150);
+        this.createEnemy(200, 100);
+        this.createEnemy(240, 100);
+        this.createEnemy(400, 100);
 
         // Weapon things
-        bullets = this.add.group();
-        bullets.enableBody = true;
-        bullets.physicsBodyType = Phaser.Physics.ARCADE;
+        this.bullets = this.add.group();
+        this.bullets.enableBody = true;
+        this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
 
-        for (var i = 0; i < 5000; i++) {
-            var b = bullets.create(0, 0, 'chicken_bullet');
+        for (var i = 0; i < 1000; i++) {
+            var b = this.bullets.create(0, 0, 'chicken_bullet');
             b.name = 'bullet' + i;
             b.exists = false;
             b.visible = false;
@@ -88,61 +83,59 @@ BasicGame.Game.prototype = {
         }
 
         /* Weapons sounds */
-        pistolSound = this.game.add.audio('pistol_shoot');
-        pistolSound.volume = 0.5;
+        this.pistolSound = this.game.add.audio('pistol_shoot');
+        this.pistolSound.volume = 0.5;
 
-        uziSound = this.game.add.audio('uzi_shoot');
-        uziSound.volume = 0.5;
+        this.uziSound = this.game.add.audio('uzi_shoot');
+        this.uziSound.volume = 0.5;
 
         // Gogo weapons !
-        weaponTypes = ["pistol", "uzi"];
-        weapons = {
+        this.weaponTypes = ["pistol", "uzi"];
+        this.weapons = {
             "pistol": {
                 fireRate: 500,
-                sound: pistolSound
+                sound: this.pistolSound
             },
             "uzi": {
                 fireRate: 100,
-                sound: uziSound
+                sound: this.uziSound
             }
         }
 
-        bulletType = weaponTypes[0];
-        fireRate = weapons[bulletType].fireRate;
-        currentWeaponSound = weapons[bulletType].sound;
+        this.bulletType = this.weaponTypes[0];
+        this.fireRate = this.weapons[this.bulletType].fireRate;
+        this.currentWeaponSound = this.weapons[this.bulletType].sound;
 
         // Weapon random changer
         timer = this.time.create(false);
         timer.loop(5000, function(){
-            bulletType = weaponTypes[Math.floor(Math.random()*weaponTypes.length)];
-            fireRate = weapons[bulletType].fireRate;
+            /*bulletType = this.weaponTypes[Math.floor(Math.random() * this.weaponTypes.length)];
+            fireRate = this.weapons[bulletType].fireRate;
             currentWeaponSound = weapons[bulletType].sound;
-            nextFire = 0;
+            nextFire = 0;*/
         }, this);
         timer.start();
 
         // Camera settings
-        this.camera.follow(player);
+        this.camera.follow(this.player);
 
         // Set up controls
-        cursors = this.input.keyboard.createCursorKeys();
-        jumpButton = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        shootButton = this.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
+        /*
+        this.cursors = this.input.keyboard.createCursorKeys();
+        this.jumpButton = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        this.shootButton = this.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
+        */
     },
 
     createEnemy: function(x, y) {
-        var enemy_texture = this.add.bitmapData(32, 64);
-        enemy_texture.ctx.beginPath();
-        enemy_texture.ctx.rect(0,0,32,64);
-        enemy_texture.ctx.fillStyle = '#27ae60';
-        enemy_texture.ctx.fill();
-
-        enemy = enemies.create(x, y, enemy_texture);
+        enemy = this.enemies.create(x, y, "basic_enemy");
         enemy.health = 3;
         enemy.body.gravity.y = 700;
         enemy.velocity = -100;
         enemy.body.velocity.x = enemy.velocity;
         enemy.body.immovable = true;
+
+        enemy.aggroRange = this.rnd.integerInRange(75, 150);
 
         enemy.changeDirection = function() {
             this.velocity = this.velocity * -1;
@@ -151,39 +144,54 @@ BasicGame.Game.prototype = {
     },
 
     update: function () {
-        this.physics.arcade.collide(player, layer);
-        this.physics.arcade.collide(player, outer);
+        this.physics.arcade.collide(this.player, this.layer);
+        this.physics.arcade.collide(this.player, this.outer);
 
-        this.physics.arcade.collide(enemies, layer);
-        this.physics.arcade.collide(enemies, outer, function(enemy, wall){
+        this.physics.arcade.collide(this.enemies, this.layer);
+        this.physics.arcade.collide(this.enemies, this.outer, function(enemy, wall){
             enemy.changeDirection();
         });
 
-        this.physics.arcade.collide(bullets, layer, function(bullet) {
+        this.physics.arcade.collide(this.bullets, this.layer, function(bullet) {
             bullet.kill();
         });
 
-        this.physics.arcade.collide(bullets, outer, function(bullet) {
+        this.physics.arcade.collide(this.bullets, this.outer, function(bullet) {
             bullet.kill();
         });
 
-        this.physics.arcade.collide(player, enemies);
+        this.physics.arcade.collide(this.player, this.enemies);
 
-        this.physics.arcade.overlap(enemies, bullets, function(enemy, bullet){
+        this.physics.arcade.overlap(this.enemies, this.bullets, function(enemy, bullet){
             enemy.damage(1);
             bullet.kill();
         });
 
         /* Enemy basic AI */
-        enemies.forEach(function(enemy){
-            var distance = Math.sqrt(Math.pow((player.x - enemy.x), 2) + Math.pow((player.y - enemy.y), 2));
-            if(distance < 250 - this.rnd.integerInRange(-40, 40)) {
-                enemy.body.velocity = 0;
+        this.enemies.forEach(function(enemy){
+
+            // Check aggro zone
+            var distance = Math.sqrt(Math.pow((this.player.x - enemy.x), 2) + Math.pow((this.player.y - enemy.y), 2));
+            if(distance < enemy.aggroRange) {
+                enemy.body.velocity.x = 0;
+            } else {
+                if(enemy.x > this.player.x) {
+                    enemy.body.velocity.x = -150;
+                } else {
+                    enemy.body.velocity.x = 150;
+                }
             }
-            // enemy
+
+            // Manage facing
+            if(enemy.x >this. player.x) {
+                enemy.scale.x = 1;
+            } else {
+                enemy.scale.x = -1;
+            }
         }.bind(this));
 
         /* MOVE MOVE */
+        /*
         player.body.velocity.x = 0;
         if (cursors.left.isDown) {
             player.body.velocity.x = -playerVelocity;
@@ -203,7 +211,6 @@ BasicGame.Game.prototype = {
             }
             idle = false;
         } else {
-            /*
             // if (facing != 'idle') {
             if (!idle) {
                 // player.animations.stop();
@@ -218,17 +225,20 @@ BasicGame.Game.prototype = {
 
                 idle = true;
             }
-            */
         }
+        */
 
         /* JUMP JUMP ! */
-        if (jumpButton.isDown && this.time.now > jumpTimer && player.body.velocity.y == 0) {
+        /*
+        if (this.jumpButton.isDown && this.time.now > jumpTimer && player.body.velocity.y == 0) {
             player.body.velocity.y = -550;
             jumpTimer = this.time.now + 750;
             jumpSound.play();
         }
+        */
 
         /* SHOOT ! */
+        /*
         if (shootButton.isDown) {
             if (this.time.time >= nextFire) {
                 bullet = bullets.getFirstExists(false);
@@ -286,6 +296,7 @@ BasicGame.Game.prototype = {
                 }
             }
         }
+        */
     },
 
     quitGame: function (pointer) {
