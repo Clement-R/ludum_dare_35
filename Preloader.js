@@ -31,10 +31,15 @@ BasicGame.Preloader.prototype = {
 		this.load.audio('jingle', ['intro.mp3']);
 		this.load.audio('mainMenuTheme', ['main_menu.mp3']);
 		this.load.image('play', 'play.png');*/
+
+		this.load.tilemap('map', 'test_map.json', null, Phaser.Tilemap.TILED_JSON);
+		this.load.image('wall', 'wall_tile.png');
+
+		this.load.image('test_bullet', 'test_bullet.png');
 	},
 
 	create: function () {
-		this.preloadBar.cropEnabled = false;
+		// this.preloadBar.cropEnabled = false;
 	},
 
 	update: function () {

@@ -27,17 +27,88 @@ BasicGame.Game = function (game) {
 
 BasicGame.Game.prototype = {
     create: function () {
-        var player_texture = game.add.bitmapData(32, 32);
+        // Set up game physic engine
+        this.physics.startSystem(Phaser.Physics.ARCADE);
+        this.physics.arcade.gravity.y = 350;
+
+        // Create map
+        var map = this.add.tilemap("map");
+        map.addTilesetImage("wall");
+        layer = map.createLayer("Calque de Tile 1");
+        map.setCollisionBetween(1, 10000, true, "Calque de Tile 1");
+        layer.resizeWorld();
+
+        // Set up player
+        var player_texture = this.add.bitmapData(32, 32);
         player_texture.ctx.beginPath();
         player_texture.ctx.rect(0,0,32,32);
         player_texture.ctx.fillStyle = '#0000ff';
         player_texture.ctx.fill();
 
-        player = this.add.sprite(0, 0, player_texture);
+        player = this.add.sprite(100, 1216, player_texture);
+        this.physics.enable(player, Phaser.Physics.ARCADE);
+        player.body.collideWorldBounds = true;
+        cursors = this.input.keyboard.createCursorKeys();
+        jumpButton = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        jumpTimer = 0;
+        facing = "";
+
+        // Camera settings
+        this.camera.follow(player);
     },
 
     update: function () {
-        // this.background.tilePosition.x -= 2;
+        this.physics.arcade.collide(player, layer);
+
+        player.body.velocity.x = 0;
+
+        if (cursors.left.isDown)
+        {
+            player.body.velocity.x = -150;
+
+            if (facing != 'left')
+            {
+                // player.animations.play('left');
+                facing = 'left';
+            }
+        }
+        else if (cursors.right.isDown)
+        {
+            player.body.velocity.x = 150;
+
+            if (facing != 'right')
+            {
+                // player.animations.play('right');
+                facing = 'right';
+            }
+        }
+        else
+        {
+            if (facing != 'idle')
+            {
+                // player.animations.stop();
+
+                if (facing == 'left')
+                {
+                    player.frame = 0;
+                }
+                else
+                {
+                    player.frame = 5;
+                }
+
+                facing = 'idle';
+            }
+        }
+
+        if (jumpButton.isDown && this.time.now > jumpTimer && player.body.velocity.y == 0)
+        {
+            player.body.velocity.y = -300;
+            jumpTimer = this.time.now + 750;
+        }
+
+        console.log(player.x);
+        console.log(player.y);
     },
 
     quitGame: function (pointer) {
