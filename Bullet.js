@@ -16,6 +16,8 @@
     this.scaleSpeed = 0;
 
     this.launcher = launcher;
+
+    this.game = game;
 };
 
 Bullet.prototype = Object.create(Phaser.Sprite.prototype);
@@ -43,6 +45,12 @@ Bullet.prototype.update = function() {
 										 },
 										 null,
 										 this);
+	}
+
+	if(this.exists) {
+		if(this.x > (this.game.player.x + this.game.camera.width)) {
+			this.kill();
+		}
 	}
 };
 

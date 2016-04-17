@@ -9,7 +9,7 @@ Player = function (game) {
     this.currentWeapon = null;
     this.health = 20;
     this.jumpTimer = 0;
-    this.facing = "left";
+    this.facing = "right";
     this.speed = 200;
     this.game = game;
 
@@ -20,7 +20,7 @@ Player = function (game) {
     this.jumpButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     this.shootButton = this.game.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
 
-    game.add.existing(this);
+    this.game.add.existing(this);
 };
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -66,8 +66,16 @@ Player.prototype.update = function() {
     }
 
     if (this.shootButton.isDown) {
-    	var x = this.x + 20;
-    	var y = this.y;
+    	if(this.facing == 'left') {
+    		this.body.velocity.x += 100;
+    		var x = this.x - 20;
+    		var y = this.y - 5;
+    	} else {
+    		this.body.velocity.x -= 100;
+    		var x = this.x + 20;
+    		var y = this.y - 5;
+    	}
+
         this.currentWeapon.fire(x, y);
     }
 };

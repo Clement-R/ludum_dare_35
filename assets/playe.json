@@ -1,0 +1,51 @@
+{ "frames": {
+   "playe 0.ase": {
+    "frame": { "x": 0, "y": 0, "w": 25, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 25, "h": 64 },
+    "sourceSize": { "w": 25, "h": 64 },
+    "duration": 100
+   },
+   "playe 1.ase": {
+    "frame": { "x": 25, "y": 0, "w": 25, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 25, "h": 64 },
+    "sourceSize": { "w": 25, "h": 64 },
+    "duration": 100
+   },
+   "playe 2.ase": {
+    "frame": { "x": 50, "y": 0, "w": 25, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 25, "h": 64 },
+    "sourceSize": { "w": 25, "h": 64 },
+    "duration": 100
+   },
+   "playe 3.ase": {
+    "frame": { "x": 75, "y": 0, "w": 25, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 25, "h": 64 },
+    "sourceSize": { "w": 25, "h": 64 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.1.4.1",
+  "image": "E:\\_Dev\\Gamedev\\ludum_dare_35\\graphics\\player.png",
+  "format": "RGBA8888",
+  "size": { "w": 100, "h": 64 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Body", "opacity": 255, "blendMode": "normal" },
+   { "name": "Legs", "opacity": 255, "blendMode": "normal" },
+   { "name": "Arms + weapon", "opacity": 255, "blendMode": "normal" },
+   { "name": "Eyes", "opacity": 255, "blendMode": "normal" }
+  ]
+ }
+}

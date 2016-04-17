@@ -81,9 +81,7 @@ Weapon.Uzi.prototype.fire = function (x, y) {
 
     rangeCircle.lineStyle(0);
     rangeCircle.beginFill(0xFFFFFF);
-    rangeCircle.drawCircle(this.game.player.x,
-                           this.game.player.y,
-                           20);
+    rangeCircle.drawCircle(x, y, 20);
     this.game.time.events.add(Phaser.Timer.SECOND * 0.05, function(){
         rangeCircle.clear();
     }, this);

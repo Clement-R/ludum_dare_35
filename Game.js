@@ -46,12 +46,6 @@ BasicGame.Game.prototype = {
         this.physics.enable(this.player, Phaser.Physics.ARCADE);
         this.player.setPhysic();
 
-        /*
-        player = this.add.sprite(33 * 32, 12 * 32, "player");
-
-        this.physics.enable(player, Phaser.Physics.ARCADE);
-        */
-
         this.jumpSound = this.game.add.audio('jump');
         this.jumpSound.volume = 0.5;
 
@@ -70,6 +64,20 @@ BasicGame.Game.prototype = {
 
         this.uziSound = this.game.add.audio('uzi_shoot');
         this.uziSound.volume = 0.5;
+
+
+        /* TEST ZONE */
+        var bird_texture = this.add.bitmapData(64, 16);
+        bird_texture.ctx.beginPath();
+        bird_texture.ctx.rect(0,0,64,16);
+        bird_texture.ctx.fillStyle = '#ff0000';
+        bird_texture.ctx.fill();
+
+        var plat = this.add.sprite(40, 20, bird_texture);
+
+        var platTween = this.add.tween(plat.scale).to({x: 2}, 1250, "Linear", true, 0, -1, true);
+        // platTween.yoyo(true, 1000);
+        /*  //TEST ZONE */
 
         // Create weapons
         // [0] : Pistol

@@ -38,7 +38,11 @@ BasicGame.Preloader.prototype = {
 
 		this.load.image('test_bullet', 'graphics/test_bullet.png');
 		this.load.image('chicken_bullet', 'graphics/chicken_bullet.png');
-		this.load.image('player', 'graphics/player.png');
+
+		// this.load.image('player', 'graphics/player.png');
+		// this.load.spritesheet('player', 'graphics/player.png', 100, 64, 4);
+		this.load.image('player', 'graphics/player_one_frame.png');
+
 		this.load.image('basic_enemy', 'graphics/basic_enemy.png');
 
 		this.load.audio('uzi_shoot', ['sounds/Laser_Shoot151.mp3']);
