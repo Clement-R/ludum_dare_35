@@ -125,9 +125,42 @@ BasicGame.Game.prototype = {
         this.enemies = this.add.group();
         this.enemies.enableBody = true;
         this.enemies.physicsBodyType = Phaser.Physics.ARCADE;
+        var enemyHealth = 5;
+        var enemy = new Enemy(this, 'basic_enemy', 20 * 32, 4 * 32,
+                              enemyHealth,
+                              null);
+        enemy.currentWeapon = new Weapon.EnemyPistol(this, enemy);
+        this.physics.arcade.enable(enemy);
+        enemy.setPhysic();
+        this.enemies.add(enemy)
 
-        var enemy = new Enemy(this, 'basic_enemy', 650, 100,
-                              3,
+        var enemy = new Enemy(this, 'basic_enemy', 30 * 32, 4 * 32,
+                              enemyHealth,
+                              null);
+        enemy.currentWeapon = new Weapon.EnemyPistol(this, enemy);
+        this.physics.arcade.enable(enemy);
+        enemy.setPhysic();
+        this.enemies.add(enemy)
+
+        var enemy = new Enemy(this, 'basic_enemy', 23 * 32, 4 * 32,
+                              enemyHealth,
+                              null);
+        enemy.currentWeapon = new Weapon.EnemyPistol(this, enemy);
+        this.physics.arcade.enable(enemy);
+        enemy.setPhysic();
+        this.enemies.add(enemy)
+
+        var enemy = new Enemy(this, 'basic_enemy', 51 * 32, 4 * 32,
+                              enemyHealth,
+                              null);
+        enemy.currentWeapon = new Weapon.EnemyPistol(this, enemy);
+        this.physics.arcade.enable(enemy);
+        enemy.setPhysic();
+        this.enemies.add(enemy)
+
+
+        var enemy = new Enemy(this, 'basic_enemy', 41 * 32, 10 * 32,
+                              enemyHealth,
                               null);
         enemy.currentWeapon = new Weapon.EnemyPistol(this, enemy);
         this.physics.arcade.enable(enemy);
@@ -135,7 +168,7 @@ BasicGame.Game.prototype = {
         this.enemies.add(enemy)
 
         var enemy = new Enemy(this, 'basic_enemy', 8 * 32, 10 * 32,
-                              3,
+                              enemyHealth,
                               null);
         enemy.currentWeapon = new Weapon.EnemyPistol(this, enemy);
         this.physics.arcade.enable(enemy);

@@ -133,6 +133,7 @@ Player.prototype.damage = function(amount) {
         	this.game.time.slowMotion = 4.0;
 
 			this.game.time.events.add(Phaser.Timer.SECOND * 4, function(){
+				this.game.music.stop();
 	            this.game.state.restart();
 	        }, this);
         }

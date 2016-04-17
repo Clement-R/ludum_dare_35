@@ -44,7 +44,7 @@ Enemy.prototype.update = function() {
     var distance = Math.sqrt(Math.pow((this.game.player.x - this.x), 2) + Math.pow((this.game.player.y - this.y), 2));
 
     if(distance > this.aggroRange && this.playerDetected) {
-        console.log(this.body.velocity.y)
+
         if(this.body.velocity.y == 0) {
             if(this.x > this.game.player.x) {
                 this.body.velocity.x = -this.speed;
@@ -63,7 +63,10 @@ Enemy.prototype.update = function() {
         } else {
             this.scale.x = -1;
         }
+    }
 
+    if(distance > this.aggroRange && this.y != this.game.player.y) {
+        this.playerDetected = false;
     }
 
     if(!this.game.player.dead && this.playerDetected) {
