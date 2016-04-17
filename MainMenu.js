@@ -22,8 +22,8 @@ BasicGame.MainMenu.prototype = {
 	},
 
 	startGame: function () {
-		/*this.music.stop();
-		this.state.start('Game');*/
+		// this.music.stop();
+		// this.state.start('Game');
 
 	}
 

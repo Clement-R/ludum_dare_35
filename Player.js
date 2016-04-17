@@ -78,7 +78,7 @@ Player.prototype.update = function() {
     }
 
     if (this.shootButton.isDown) {
-    	// this.game.camera.shake(0.000005, 125, Phaser.Camera.SHAKE_BOTH);
+    	this.game.camera.shake(0.000005, 125, Phaser.Camera.SHAKE_BOTH);
 
     	if(this.facing == 'left') {
     		var x = this.x - 20;
