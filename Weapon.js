@@ -8,7 +8,7 @@ Weapon.Pistol = function (game) {
     this.nextFire = 0;
     this.bulletSpeed = 750;
     this.fireRate = 500;
-
+    this.game = game;
     this.fireSound = this.game.pistolSound;
 
     for (var i = 0; i < 256; i++) {
@@ -56,6 +56,7 @@ Weapon.Uzi = function (game) {
     this.nextFire = 0;
     this.bulletSpeed = 950;
     this.fireRate = 150;
+    this.game = game;
 
     this.fireSound = this.game.uziSound;
 
@@ -108,6 +109,7 @@ Weapon.EnemyPistol = function (game, user) {
     this.nextFire = 0;
     this.bulletSpeed = 750;
     this.fireRate = 750;
+    this.game = game;
     this.user = user;
     this.fireSound = this.game.pistolSound;
 

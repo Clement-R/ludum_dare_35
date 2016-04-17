@@ -16,8 +16,7 @@ BasicGame.Boot.prototype = {
     },
 
     preload: function () {
-        // this.load.image('preloaderBackground', 'images/preloader_background.jpg');
-        // this.load.image('preloaderBar', 'loading_bar.png');
+        this.load.image('preloaderBar', 'graphics/loading_bar.png');
     },
 
     create: function () {

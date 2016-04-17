@@ -18,18 +18,18 @@ BasicGame.Game = function (game) {
     this.particles; //  the particle manager (Phaser.Particles)
     this.physics;   //  the physics manager (Phaser.Physics)
     this.rnd;       //  the repeatable random number generator (Phaser.RandomDataGenerator)
-
-    this.speed = 300;
-    this.weapons = [];
-    this.player = null;
-    this.enemies = null;
-;};
+ };
 
 BasicGame.Game.prototype = {
     create: function () {
+        this.time.slowMotion = 1.0;
+        this.weapons = [];
+        this.player = null;
+        this.enemies = null;
+
         this.stage.backgroundColor = "#2b87c4"
         this.music = this.add.audio('theme', 0.5, true);
-        // this.music.play();
+        this.music.play();
 
         // Set up game physic engine
         this.physics.startSystem(Phaser.Physics.ARCADE);
@@ -40,7 +40,7 @@ BasicGame.Game.prototype = {
         this.map.addTilesetImage("wall");
         this.map.addTilesetImage("back");
 
-        this.layer = this.map.createLayer("background");
+        this.background = this.map.createLayer("background");
         this.layer = this.map.createLayer("level");
         this.map.setCollisionBetween(1, 1, true, "level");
         this.layer.resizeWorld();
@@ -63,22 +63,6 @@ BasicGame.Game.prototype = {
         /* TEST ZONE */
         this.platforms = this.add.group();
 
-        var bird_texture = this.add.bitmapData(64, 16);
-        bird_texture.ctx.beginPath();
-        bird_texture.ctx.rect(0,0,64,16);
-        bird_texture.ctx.fillStyle = '#ff0000';
-        bird_texture.ctx.fill();
-
-        /*
-        var plat = this.add.sprite(54 * 32, 5 * 32, bird_texture);
-        this.physics.enable(plat, Phaser.Physics.ARCADE);
-        plat.body.allowGravity = false;
-        plat.body.immovable = true;
-
-        var platTween = this.add.tween(plat.scale).to({x: 2}, 1250, "Linear", true, 0, -1, true);
-
-        this.platforms.add(plat);
-        */
         this.laserTrapSound = this.game.add.audio('laser_activation');
         this.laserTrapSound.volume = 0.25;
 
@@ -119,13 +103,20 @@ BasicGame.Game.prototype = {
 
         // Weapon random changer
         timer = this.time.create(false);
-        timer.loop(5000, function(){
+        timer.loop(2500, function(){
 
             weapon = this.weapons[Math.floor(Math.random() * this.weapons.length)];
             this.player.currentWeapon = weapon;
 
         }, this);
         timer.start();
+
+        // Boss door
+        this.door = this.add.sprite(59 * 32, 14 * 32, "door");
+        this.door.visible = false;
+        this.physics.enable(this.door, Phaser.Physics.ARCADE);
+        this.door.body.allowGravity = false;
+        this.door.body.immovable = true;
 
         // Camera settings
         this.camera.follow(this.player);
@@ -142,21 +133,52 @@ BasicGame.Game.prototype = {
         this.physics.arcade.enable(enemy);
         enemy.setPhysic();
         this.enemies.add(enemy)
+
+        var enemy = new Enemy(this, 'basic_enemy', 8 * 32, 10 * 32,
+                              3,
+                              null);
+        enemy.currentWeapon = new Weapon.EnemyPistol(this, enemy);
+        this.physics.arcade.enable(enemy);
+        enemy.setPhysic();
+        this.enemies.add(enemy)
+
+        // set up boss
+        this.boss = new Boss(this, 'boss', 75 * 32,
+                             //(19 * 32) - 87,
+                             this.game.world.height - 32 - 73,
+                             50);
+        this.boss.pistol1 = new Weapon.EnemyPistol(this, this.boss);
+        this.boss.pistol2 = new Weapon.EnemyPistol(this, this.boss);
+        this.physics.arcade.enable(this.boss);
+        this.boss.setPhysic();
+        this.enemies.add(this.boss)
+
+        this.boss.body.allowGravity = false;
+        this.boss.body.immovable = true;
+
+        this.enemies.add(this.boss);
     },
 
     update: function () {
         this.physics.arcade.collide(this.player, this.layer);
         this.physics.arcade.collide(this.player, this.platforms);
+
         this.physics.arcade.collide(this.player, this.lazors, function(player){
-            player.damage(100);
-        });
-        this.physics.arcade.overlap(this.player, this.lazors, function(player){
             player.damage(100);
         });
 
         this.physics.arcade.collide(this.enemies, this.layer);
 
+        this.physics.arcade.collide(this.boss, this.player, function(boss, player){
+            player.damage(1000);
+        });
+
         this.physics.arcade.collide(this.player, this.enemies);
+
+        if(this.player.x > 60 * 32) {
+            this.door.visible = true;
+            this.physics.arcade.collide(this.player, this.door);
+        }
     },
 
     quitGame: function (pointer) {

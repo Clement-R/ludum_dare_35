@@ -8,8 +8,8 @@ Enemy = function (game, key, x, y, health, weapon) {
     this.health = health;
     this.anchor.setTo(0.5, 0.5);
     this.game = game;
-    this.playerDetected = false,
-    this.aggroRange = this.game.rnd.integerInRange(100, 150);
+    this.playerDetected = false;
+    this.aggroRange = this.game.rnd.integerInRange(300, 350);
 
     this.filter = new PIXI.ColorMatrixFilter();
     this.experiment_filter = [1,1,1,1,
@@ -42,7 +42,9 @@ Enemy.prototype.update = function() {
     this.body.velocity.x = 0;
 
     var distance = Math.sqrt(Math.pow((this.game.player.x - this.x), 2) + Math.pow((this.game.player.y - this.y), 2));
+
     if(distance > this.aggroRange && this.playerDetected) {
+        console.log(this.body.velocity.y)
         if(this.body.velocity.y == 0) {
             if(this.x > this.game.player.x) {
                 this.body.velocity.x = -this.speed;
@@ -50,6 +52,10 @@ Enemy.prototype.update = function() {
                 this.body.velocity.x = this.speed;
             }
         }
+    }
+
+    if(distance < this.aggroRange && this.y == this.game.player.y) {
+        this.playerDetected = true;
 
         // Manage facing
         if(this.x > this.game.player.x) {
@@ -57,9 +63,12 @@ Enemy.prototype.update = function() {
         } else {
             this.scale.x = -1;
         }
+
     }
 
-    this.fire();
+    if(!this.game.player.dead && this.playerDetected) {
+        this.fire();
+    }
 };
 
 Enemy.prototype.fire = function() {
@@ -82,6 +91,10 @@ Enemy.prototype.kill = function() {
 Enemy.prototype.damage = function(amount) {
     if (this.alive) {
 
+        emitter = this.game.add.emitter(this.x, this.y, 50);
+        emitter.makeParticles('w_particle');
+        emitter.gravity = 0;
+
         // FLASH !
         this.filter.matrix = this.experiment_filter;
         this.filters = [this.filter];
@@ -92,14 +105,20 @@ Enemy.prototype.damage = function(amount) {
         }, this);
 
         if(this.scale.x == 1) {
+            emitter.setXSpeed(100, 150);
+            emitter.setYSpeed(-10, -30);
             // left
             this.body.velocity.x += 1500;
             this.body.velocity.y -= 100;
         } else {
+            emitter.setXSpeed(-100, -150);
+            emitter.setYSpeed(-10, -30);
             // right
             this.body.velocity.x -= 1500;
             this.body.velocity.y -= 100;
         }
+
+        emitter.start(true, 250, null, 100);
 
         this.health -= amount;
 

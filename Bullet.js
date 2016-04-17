@@ -47,6 +47,14 @@ Bullet.prototype.update = function() {
 										 this);
 	}
 
+	this.game.physics.arcade.collide(this,
+									 this.game.layer,
+									 function(bullet, layer) {
+									 	bullet.kill();
+									 },
+									 null,
+									 this);
+
 	if(this.exists) {
 		if(this.x > (this.game.player.x + this.game.camera.width)) {
 			this.kill();
