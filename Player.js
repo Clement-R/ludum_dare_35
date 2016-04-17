@@ -3,21 +3,18 @@ nextFire = 0;
 */
 
 Player = function (game) {
-    Phaser.Sprite.call(this, game, 33 * 32, 12 * 32, "player");
+    Phaser.Sprite.call(this, game, 2 * 32, 2 * 32, "player");
 
     // this.weapons = [];
-    // this.currentWeapon = null;
+    this.currentWeapon = null;
     this.health = 20;
     this.jumpTimer = 0;
     this.facing = "left";
     this.speed = 200;
     this.game = game;
 
-    // Add key to change weapon
-    /*
-    var changeKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-    changeKey.onDown.add(this.changeWeapon, this, 1);
-    */
+    this.anchor.setTo(.5, .5);
+
     // Set up controls
     this.cursors = this.game.input.keyboard.createCursorKeys();
     this.jumpButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -31,7 +28,6 @@ Player.prototype.constructor = Player;
 
 Player.prototype.update = function() {
 	this.game.physics.arcade.collide(this.player, this.game.layer);
-    this.game.physics.arcade.collide(this.player, this.game.outer);
 
 	this.body.velocity.x = 0;
 
@@ -69,82 +65,11 @@ Player.prototype.update = function() {
         this.game.jumpSound.play();
     }
 
-    /*if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
-    	var x = this.x + 57;
-    	var y = this.y + 41;
+    if (this.shootButton.isDown) {
+    	var x = this.x + 20;
+    	var y = this.y;
         this.currentWeapon.fire(x, y);
-    }*/
-
-    /*
-    this.game.physics.arcade.overlap(this,
-									 this.game.enemies,
-									 function(player, enemy) {
-									 	player.damage(5);
-									 	enemy.kill();
-									 },
-									 null,
-									 this);
-	*/
-
-	/*
-	if (shootButton.isDown) {
-        if (this.time.time >= nextFire) {
-            bullet = bullets.getFirstExists(false);
-            if (bullet) {
-                currentWeaponSound.play();
-                var rangeCircle = this.game.add.graphics(0, 0);
-                rangeCircle.x = 0;
-                rangeCircle.y = 0;
-
-                rangeCircle.lineStyle(0);
-                rangeCircle.beginFill(0xFFFFFF);
-
-                if(facing == "right") {
-                    bullet.reset(player.x, player.y);
-                    rangeCircle.drawCircle(player.x,
-                                           player.y + 26,
-                                           20);
-                } else if (facing == "left") {
-                    bullet.reset(player.x - 25, player.y);
-                    rangeCircle.drawCircle(player.x,
-                                           player.y + 26,
-                                           20);
-                }
-
-                rangeCircle.endFill();
-
-                if(bulletType == "pistol") {
-                    var velocity = 750;
-                    bullet.angle = 0;
-                } else if (bulletType == "uzi") {
-                    var velocity = 950;
-                    bullet.angle = 0;
-                    bullet.angle += this.rnd.integerInRange(-3, 3);
-                }
-
-
-                if(facing == "right") {
-                    this.physics.arcade.accelerationFromRotation(bullet.rotation,
-                                                                 velocity,
-                                                                 bullet.body.velocity);
-
-                    // bullet.body.velocity.x = velocity;
-                } else if (facing == "left") {
-                    // bullet.body.velocity.x = -velocity;
-                    this.physics.arcade.accelerationFromRotation(bullet.rotation,
-                                                                 -velocity,
-                                                                 bullet.body.velocity);
-                }
-
-                nextFire = this.time.time + fireRate;
-                this.time.events.add(Phaser.Timer.SECOND * 0.05, function(){
-                    rangeCircle.clear();
-                }, this);
-
-            }
-        }
     }
-    */
 };
 
 Player.prototype.setPhysic = function() {
