@@ -34,6 +34,7 @@ BasicGame.Preloader.prototype = {
 
 		this.load.tilemap('map', 'test_map.json', null, Phaser.Tilemap.TILED_JSON);
 		this.load.image('wall', 'graphics/wall_tile.png');
+		this.load.image('back', 'graphics/wall.png');
 		this.load.image('ladder', 'graphics/ladder.png');
 
 		this.load.image('test_bullet', 'graphics/test_bullet.png');
@@ -41,6 +42,7 @@ BasicGame.Preloader.prototype = {
 
 		// this.load.image('player', 'graphics/player.png');
 		// this.load.spritesheet('player', 'graphics/player.png', 100, 64, 4);
+		this.load.spritesheet('laser_trap', 'graphics/laser.png', 192, 32, 2);
 		this.load.image('player', 'graphics/player_one_frame.png');
 
 		this.load.image('basic_enemy', 'graphics/basic_enemy.png');
@@ -48,6 +50,8 @@ BasicGame.Preloader.prototype = {
 		this.load.audio('uzi_shoot', ['sounds/Laser_Shoot151.mp3']);
 		this.load.audio('pistol_shoot', ['sounds/Laser_Shoot157.mp3']);
 		this.load.audio('jump', ['sounds/Jump25.mp3']);
+		this.load.audio('laser_activation', ['sounds/laser_activation.mp3']);
+		this.load.audio('theme', ['sounds/song.mp3']);
 	},
 
 	create: function () {

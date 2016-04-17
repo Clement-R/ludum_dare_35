@@ -28,6 +28,8 @@ BasicGame.Game = function (game) {
 BasicGame.Game.prototype = {
     create: function () {
         this.stage.backgroundColor = "#2b87c4"
+        this.music = this.add.audio('theme', 0.5, true);
+        // this.music.play();
 
         // Set up game physic engine
         this.physics.startSystem(Phaser.Physics.ARCADE);
@@ -36,7 +38,9 @@ BasicGame.Game.prototype = {
         // Create map
         this.map = this.add.tilemap("map");
         this.map.addTilesetImage("wall");
+        this.map.addTilesetImage("back");
 
+        this.layer = this.map.createLayer("background");
         this.layer = this.map.createLayer("level");
         this.map.setCollisionBetween(1, 1, true, "level");
         this.layer.resizeWorld();
@@ -47,36 +51,61 @@ BasicGame.Game.prototype = {
         this.player.setPhysic();
 
         this.jumpSound = this.game.add.audio('jump');
-        this.jumpSound.volume = 0.5;
-
-        // Set up enemy
-        this.enemies = this.add.group();
-        this.enemies.enableBody = true;
-        this.enemies.physicsBodyType = Phaser.Physics.ARCADE;
-
-        this.createEnemy(200, 100);
-        this.createEnemy(240, 100);
-        this.createEnemy(400, 100);
+        this.jumpSound.volume = 0.25;
 
         /* Weapons sounds */
         this.pistolSound = this.game.add.audio('pistol_shoot');
-        this.pistolSound.volume = 0.5;
+        this.pistolSound.volume = 0.3;
 
         this.uziSound = this.game.add.audio('uzi_shoot');
-        this.uziSound.volume = 0.5;
-
+        this.uziSound.volume = 0.3;
 
         /* TEST ZONE */
+        this.platforms = this.add.group();
+
         var bird_texture = this.add.bitmapData(64, 16);
         bird_texture.ctx.beginPath();
         bird_texture.ctx.rect(0,0,64,16);
         bird_texture.ctx.fillStyle = '#ff0000';
         bird_texture.ctx.fill();
 
-        var plat = this.add.sprite(40, 20, bird_texture);
+        /*
+        var plat = this.add.sprite(54 * 32, 5 * 32, bird_texture);
+        this.physics.enable(plat, Phaser.Physics.ARCADE);
+        plat.body.allowGravity = false;
+        plat.body.immovable = true;
 
         var platTween = this.add.tween(plat.scale).to({x: 2}, 1250, "Linear", true, 0, -1, true);
-        // platTween.yoyo(true, 1000);
+
+        this.platforms.add(plat);
+        */
+        this.laserTrapSound = this.game.add.audio('laser_activation');
+        this.laserTrapSound.volume = 0.25;
+
+        this.lazors = this.add.group();
+
+        var lazor = this.add.sprite(53 * 32, 5 * 32, "laser_trap", 0);
+        this.physics.enable(lazor, Phaser.Physics.ARCADE);
+        lazor.body.allowGravity = false;
+        lazor.body.immovable = true;
+        this.lazors.add(lazor);
+
+        lazorTimer = this.time.create(false);
+        lazorTimer.loop(1500, function(){
+            if(lazor.frame == 1) {
+                lazor.loadTexture("laser_trap", 0);
+                lazor.body.enable = false;
+            } else {
+                var distance = Math.sqrt(Math.pow((this.player.x - lazor.x), 2) + Math.pow((this.player.y - lazor.y), 2));
+                if(distance <= 200) {
+                    this.laserTrapSound.play();
+                }
+                lazor.body.enable = true;
+                lazor.loadTexture("laser_trap", 1);
+            }
+        }, this);
+        lazorTimer.start();
+
         /*  //TEST ZONE */
 
         // Create weapons
@@ -93,60 +122,41 @@ BasicGame.Game.prototype = {
         timer.loop(5000, function(){
 
             weapon = this.weapons[Math.floor(Math.random() * this.weapons.length)];
-            // this.player.currentWeapon = weapon;
+            this.player.currentWeapon = weapon;
 
         }, this);
         timer.start();
 
         // Camera settings
         this.camera.follow(this.player);
-    },
 
-    createEnemy: function(x, y) {
-        enemy = this.enemies.create(x, y, "basic_enemy");
-        enemy.health = 3;
-        enemy.body.gravity.y = 700;
-        enemy.velocity = -100;
-        enemy.body.velocity.x = enemy.velocity;
-        enemy.body.immovable = true;
+        // Set up enemy
+        this.enemies = this.add.group();
+        this.enemies.enableBody = true;
+        this.enemies.physicsBodyType = Phaser.Physics.ARCADE;
 
-        enemy.aggroRange = this.rnd.integerInRange(75, 150);
-
-        enemy.changeDirection = function() {
-            this.velocity = this.velocity * -1;
-            this.body.velocity.x = this.velocity;
-        };
+        var enemy = new Enemy(this, 'basic_enemy', 650, 100,
+                              3,
+                              null);
+        enemy.currentWeapon = new Weapon.EnemyPistol(this, enemy);
+        this.physics.arcade.enable(enemy);
+        enemy.setPhysic();
+        this.enemies.add(enemy)
     },
 
     update: function () {
         this.physics.arcade.collide(this.player, this.layer);
+        this.physics.arcade.collide(this.player, this.platforms);
+        this.physics.arcade.collide(this.player, this.lazors, function(player){
+            player.damage(100);
+        });
+        this.physics.arcade.overlap(this.player, this.lazors, function(player){
+            player.damage(100);
+        });
 
         this.physics.arcade.collide(this.enemies, this.layer);
 
         this.physics.arcade.collide(this.player, this.enemies);
-
-        /* Enemy basic AI */
-        this.enemies.forEach(function(enemy){
-
-            // Check aggro zone
-            var distance = Math.sqrt(Math.pow((this.player.x - enemy.x), 2) + Math.pow((this.player.y - enemy.y), 2));
-            if(distance < enemy.aggroRange) {
-                enemy.body.velocity.x = 0;
-            } else {
-                if(enemy.x > this.player.x) {
-                    enemy.body.velocity.x = -150;
-                } else {
-                    enemy.body.velocity.x = 150;
-                }
-            }
-
-            // Manage facing
-            if(enemy.x >this. player.x) {
-                enemy.scale.x = 1;
-            } else {
-                enemy.scale.x = -1;
-            }
-        }.bind(this));
     },
 
     quitGame: function (pointer) {
@@ -154,7 +164,7 @@ BasicGame.Game.prototype = {
         //  Here you should destroy anything you no longer need.
         //  Stop music, delete sprites, purge caches, free resources, all that good stuff.
 
-        // STOP THE MUSIC
+        this.music.stop();
 
         //  Go back to the main menu
         this.state.start('MainMenu');
